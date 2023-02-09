@@ -1,6 +1,8 @@
 import requests
 import os
 from twilio.rest import Client
+# Needed to run the code in Pythonanywhere
+from twilio.http.http_client import TwilioHttpClient
 
 # ---------------------------- VARIABLES ------------------------------- #
 
@@ -36,8 +38,11 @@ min_number_forecast = int(min(weather_forecast))
 
 # Sending SMS if FC for the next 12 hours == rain
 if min_number_forecast < 700:
-    print("Bring umbrella. In the next 12 hours will rain!")
-    client = Client(account_sid, auth_token)
+    # Needed to run the code in Pythonanywhere
+    proxy_client = TwilioHttpClient()
+    proxy_client.session.proxies = {'https': os.environ['https_proxy']}
+    client = Client(account_sid, auth_token, http_client=proxy_client)
+    
     message = client.messages \
                     .create(
                          body="Bring umbrella. In the next 12 hours will rain!",
