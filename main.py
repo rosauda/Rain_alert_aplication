@@ -1,9 +1,11 @@
 import requests
+import os
+from twilio.rest import Client
 
 # ---------------------------- VARIABLES ------------------------------- #
 
 OWM_endpoint = "https://api.openweathermap.org/data/3.0/onecall"
-API_KEY = ""
+API_KEY = "[]"
 
 parameters = {
     "lat": 53.5488,
@@ -11,6 +13,9 @@ parameters = {
     "appid": API_KEY,
     "exclude": "current,minutely,daily"
 }
+
+account_sid = "[]"
+auth_token = "[]"
 
 # ---------------------------- GETTING CURRENT WEATHER DATA USING API ------------------------------- #
 
@@ -29,9 +34,15 @@ print(weather_data[0]["weather"][0]["id"])
 weather_forecast = [weather_data[item]["weather"][0]["id"] for item in range(0, 12)]
 min_number_forecast = int(min(weather_forecast))
 
+# Sending SMS
 if min_number_forecast < 700:
     print("Bring umbrella. In the next 12 hours will rain!")
-else:
-    pass
+    client = Client(account_sid, auth_token)
+    message = client.messages \
+                    .create(
+                         body="Bring umbrella. In the next 12 hours will rain!",
+                         from_='+XXXX',
+                         to='+XXXX'
+                     )
 
-
+    print(message.status)
