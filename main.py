@@ -3,7 +3,7 @@ import requests
 # ---------------------------- VARIABLES ------------------------------- #
 
 OWM_endpoint = "https://api.openweathermap.org/data/3.0/onecall"
-API_KEY = "[]"
+API_KEY = ""
 
 parameters = {
     "lat": 53.5488,
@@ -27,10 +27,11 @@ weather_data = weather_data["hourly"][:12]
 print(weather_data[0]["weather"][0]["id"])
 
 weather_forecast = [weather_data[item]["weather"][0]["id"] for item in range(0, 12)]
+min_number_forecast = int(min(weather_forecast))
 
-for id in weather_forecast:
-    if id < 800:
-        print("Will rain, please take your umbrella")
-    else:
-        pass
+if min_number_forecast < 700:
+    print("Bring umbrella. In the next 12 hours will rain!")
+else:
+    pass
+
 
