@@ -1,11 +1,13 @@
 import requests
 import os
 from twilio.rest import Client
+# Needed to run the code in Pythonanywhere
+from twilio.http.http_client import TwilioHttpClient
 
 # ---------------------------- VARIABLES ------------------------------- #
 
 OWM_endpoint = "https://api.openweathermap.org/data/3.0/onecall"
-API_KEY = "[]"
+API_KEY = os.environ["OWM_API_KEY"]
 
 parameters = {
     "lat": 53.5488,
@@ -14,8 +16,10 @@ parameters = {
     "exclude": "current,minutely,daily"
 }
 
-account_sid = "[]"
-auth_token = "[]"
+account_sid = os.environ["ACCOUNT_SID"]
+auth_token = os.environ["AUTH_TOKEN"]
+from_number = os.environ["FROM_NUMBER"]
+to_number = os.environ["TO_NUMBER"]
 
 # ---------------------------- GETTING CURRENT WEATHER DATA USING API ------------------------------- #
 
@@ -36,13 +40,16 @@ min_number_forecast = int(min(weather_forecast))
 
 # Sending SMS
 if min_number_forecast < 700:
-    print("Bring umbrella. In the next 12 hours will rain!")
-    client = Client(account_sid, auth_token)
+    # Needed to run the code in Pythonanywhere
+    proxy_client = TwilioHttpClient()
+    proxy_client.session.proxies = {'https': os.environ['https_proxy']}
+    client = Client(account_sid, auth_token, http_client=proxy_client)
+
     message = client.messages \
                     .create(
                          body="Bring umbrella. In the next 12 hours will rain!",
-                         from_='+XXXX',
-                         to='+XXXX'
+                         from_=from_number,
+                         to=to_number
                      )
 
     print(message.status)
